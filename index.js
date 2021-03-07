@@ -16,13 +16,14 @@ withGoogleMapsKmlDocument(isoRatasMid, function(err, xml) {
     throw new Error("Failed to load map document");
   }
   console.log("KML", xml);
+  const mapName = xml.querySelector('Document > name').textContent;
   const kml = parseKml(xml);
   console.log("Geojson", kml);
   const delivery = deliveryZonesLayer(kml);
   delivery.addTo(map);
   const outside = outsideLayer(delivery);
   outside.addTo(map);
-  const legend = deliveryZonesLegendControl(delivery);
+  const legend = deliveryZonesLegendControl(delivery, { title: mapName } );
   legend.addTo(map);
   map.setMaxBounds(delivery.getBounds().pad(0.05));
   map.setMinZoom(map.getBoundsZoom(delivery.getBounds()));
@@ -61,11 +62,15 @@ function deliveryZonesLayer(deliveryZones) {
   return zonesLayer;
 }
 
-function deliveryZonesLegendControl(zonesLayer) {
+function deliveryZonesLegendControl(zonesLayer, options) {
   const zoneLayers = zonesLayer.getLayers();
   const legend = new Leaflet.Control({ position: 'topright' });
   legend.onAdd = function() {
     const legendDiv = Leaflet.DomUtil.create('div', 'legend');
+    if (options.title) {
+      const legendTitle = Leaflet.DomUtil.create('h4', 'legend__title', legendDiv);
+      legendTitle.innerHTML = options.title;
+    }
     zoneLayers.forEach(function(zoneLayer, index) {
       const name = zoneLayer.feature.properties.name;
       const color = zoneLayer.options.color;

@@ -69,7 +69,7 @@ function deliveryZonesLegendControl(zonesLayer, options) {
     const legendDiv = Leaflet.DomUtil.create('div', 'legend');
     if (options.title) {
       const legendTitle = Leaflet.DomUtil.create('h4', 'legend__title', legendDiv);
-      legendTitle.innerHTML = options.title;
+      legendTitle.textContent = options.title;
     }
     zoneLayers.forEach(function(zoneLayer, index) {
       const name = zoneLayer.feature.properties.name;
@@ -78,7 +78,7 @@ function deliveryZonesLegendControl(zonesLayer, options) {
       const colorSpan = Leaflet.DomUtil.create('span', 'legend__zone-color', zoneDiv);
       colorSpan.style.background = color;
       const nameSpan = Leaflet.DomUtil.create('span', 'legend__zone-name', zoneDiv);
-      nameSpan.innerHTML = name;
+      nameSpan.textContent = name;
       console.log(index, color, name);
     });
     return legendDiv;

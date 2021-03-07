@@ -15,11 +15,15 @@ withGoogleMapsKmlDocument(isoRatasMid, function(err, xml) {
       console.error(err);
     throw new Error("Failed to load map document");
   }
+  console.log("KML", xml);
   const kml = parseKml(xml);
+  console.log("Geojson", kml);
   const delivery = deliveryZonesLayer(kml);
   delivery.addTo(map);
   const outside = outsideLayer(delivery);
   outside.addTo(map);
+  const legend = deliveryZonesLegendControl(delivery);
+  legend.addTo(map);
   map.setMaxBounds(delivery.getBounds().pad(0.05));
   map.setMinZoom(map.getBoundsZoom(delivery.getBounds()));
   map.setZoom(map.getMinZoom());
@@ -40,7 +44,7 @@ function deliveryZonesLayer(deliveryZones) {
       mouseover: function(event) {
         zoneLayer.setStyle({
           weight: 6,
-          fillOpacity: 0.3,
+          fillOpacity: 0.2,
         });
         zoneLayer.bringToFront();
       },
@@ -55,6 +59,26 @@ function deliveryZonesLayer(deliveryZones) {
     zoneLayer.setStyle(style);
   })
   return zonesLayer;
+}
+
+function deliveryZonesLegendControl(zonesLayer) {
+  const zoneLayers = zonesLayer.getLayers();
+  const legend = new Leaflet.Control({ position: 'topright' });
+  legend.onAdd = function() {
+    const legendDiv = Leaflet.DomUtil.create('div', 'legend');
+    zoneLayers.forEach(function(zoneLayer, index) {
+      const name = zoneLayer.feature.properties.name;
+      const color = zoneLayer.options.color;
+      const zoneDiv = Leaflet.DomUtil.create('div', 'legend__zone', legendDiv);
+      const colorSpan = Leaflet.DomUtil.create('span', 'legend__zone-color', zoneDiv);
+      colorSpan.style.background = color;
+      const nameSpan = Leaflet.DomUtil.create('span', 'legend__zone-name', zoneDiv);
+      nameSpan.innerHTML = name;
+      console.log(index, color, name);
+    });
+    return legendDiv;
+  }
+  return legend;
 }
 
 function outsideLayer(insideLayer) {

@@ -87,22 +87,17 @@ function deliveryZonesLegendControl(zonesLayer, options) {
 }
 
 function outsideLayer(insideLayer) {
-  console.log(insideLayer);
-  var world =
-    [ insideLayer.getBounds().pad(1).getSouthWest(),
-      insideLayer.getBounds().pad(1).getNorthWest(),
-      insideLayer.getBounds().pad(1).getNorthEast(),
-      insideLayer.getBounds().pad(1).getSouthEast()
-    ];
+  const bounds = insideLayer.getBounds().pad(1);
+  var world = [ bounds.getSouthWest(), bounds.getNorthWest(),
+                bounds.getNorthEast(), bounds.getSouthEast() ];
   const holes = insideLayer.getLayers().map(layer => layer.getLatLngs()).flat();
-  const nonDeliveryPolygon = new Leaflet.Polygon(
+  return new Leaflet.Polygon(
     [world, ...holes],
     { stroke: false,
       fillColor: "grey",
       fillOpacity: 0.8,
     }
   );
-  return nonDeliveryPolygon;
 }
 
 function addMap(element) {

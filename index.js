@@ -32,7 +32,7 @@ withGoogleMapsKmlDocument(isoRatasMid, function(err, xml) {
 });
 
 function deliveryZonesLayer(deliveryZones) {
-  const zonesLayer = Leaflet.geoJSON(deliveryZones)
+  const zonesLayer = new Leaflet.GeoJSON(deliveryZones)
   const zoneLayers = zonesLayer.getLayers();
   const colors = CartoColor.Sunset[zoneLayers.length];
   zoneLayers.forEach(function(zoneLayer, index) {
@@ -95,7 +95,7 @@ function outsideLayer(insideLayer) {
       insideLayer.getBounds().pad(1).getSouthEast()
     ];
   const holes = insideLayer.getLayers().map(layer => layer.getLatLngs()).flat();
-  const nonDeliveryPolygon = Leaflet.polygon(
+  const nonDeliveryPolygon = new Leaflet.Polygon(
     [world, ...holes],
     { stroke: false,
       fillColor: "grey",
@@ -113,12 +113,12 @@ function addMap(element) {
 
   const helsinkiCoordinates = [60.192059, 24.945831];
 
-  const map = Leaflet.map(div, {
+  const map = new Leaflet.Map(div, {
     center: helsinkiCoordinates,
     zoom: 12,
     zoomSnap: 0.5,
     maxBoundsViscosity: 0.75,
-    renderer: Leaflet.svg({ padding: 1 })
+    renderer: new Leaflet.SVG({ padding: 1 })
   });
   return map;
 }
@@ -126,7 +126,7 @@ function addMap(element) {
 function addRasterTiles(map) {
   var style = "high-contrast";
   const tileUrl = `https://tiles.hel.ninja/styles/hel-osm-${style}/{z}/{x}/{y}@2x@fi.png`;
-  const tileLayer = Leaflet.tileLayer(tileUrl, {});
+  const tileLayer = new Leaflet.TileLayer(tileUrl, {});
   tileLayer.addTo(map);
 }
 

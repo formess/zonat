@@ -7,7 +7,9 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@mapbox/togeojson": "^0.16.0",
+    "cartocolor": "^4.0.2",
     "leaflet": "^1.7.1",
-    "leaflet-omnivore": "^0.3.4"
+    "togeojson": "^0.16.0"
   }
 }

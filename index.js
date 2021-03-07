@@ -18,6 +18,8 @@ withGoogleMapsKmlDocument(isoRatasMid, function(err, xml) {
   const kml = parseKml(xml);
   const delivery = deliveryZonesLayer(kml);
   delivery.addTo(map);
+  const outside = outsideLayer(delivery);
+  outside.addTo(map);
   map.setMaxBounds(delivery.getBounds().pad(0.05));
   map.setMinZoom(map.getBoundsZoom(delivery.getBounds()));
   map.setZoom(map.getMinZoom());
@@ -53,6 +55,25 @@ function deliveryZonesLayer(deliveryZones) {
     zoneLayer.setStyle(style);
   })
   return zonesLayer;
+}
+
+function outsideLayer(insideLayer) {
+  console.log(insideLayer);
+  var world =
+    [ insideLayer.getBounds().pad(1).getSouthWest(),
+      insideLayer.getBounds().pad(1).getNorthWest(),
+      insideLayer.getBounds().pad(1).getNorthEast(),
+      insideLayer.getBounds().pad(1).getSouthEast()
+    ];
+  const holes = insideLayer.getLayers().map(layer => layer.getLatLngs()).flat();
+  const nonDeliveryPolygon = Leaflet.polygon(
+    [world, ...holes],
+    { stroke: false,
+      fillColor: "grey",
+      fillOpacity: 0.8,
+    }
+  );
+  return nonDeliveryPolygon;
 }
 
 function addMap(element) {

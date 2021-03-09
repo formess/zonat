@@ -63,7 +63,6 @@ function deliveryZonesLayer(deliveryZones) {
 }
 
 function deliveryZonesLegendControl(zonesLayer, options) {
-  const zoneLayers = zonesLayer.getLayers();
   const legend = new Leaflet.Control({ position: 'topright' });
   legend.onAdd = function() {
     const legendDiv = DomUtil.create('div', 'legend');
@@ -71,9 +70,11 @@ function deliveryZonesLegendControl(zonesLayer, options) {
       const legendTitle = DomUtil.create('h4', 'legend__title', legendDiv);
       legendTitle.textContent = options.title;
     }
-    zoneLayers.forEach(function(zoneLayer, index) {
+    zonesLayer.getLayers().forEach(function(zoneLayer, index) {
       const name = zoneLayer.feature.properties.name;
-      const color = zoneLayer.options.color;
+      const color = !zoneLayer.getLayers
+            ? zoneLayer.options.color
+            : zoneLayer.getLayers()[0].options.color;
       const zoneDiv = DomUtil.create('div', 'legend__zone', legendDiv);
       const colorSpan = DomUtil.create('span', 'legend__zone-color', zoneDiv);
       colorSpan.style.background = color;
@@ -110,7 +111,7 @@ function outsideLayer(insideLayer) {
   const bounds = insideLayer.getBounds().pad(1);
   var world = [ bounds.getSouthWest(), bounds.getNorthWest(),
                 bounds.getNorthEast(), bounds.getSouthEast() ];
-  const holes = insideLayer.getLayers().map(layer => layer.getLatLngs()).flat();
+  const holes = layerPolygons(insideLayer);
   return new Leaflet.Polygon(
     [world, ...holes],
     { stroke: false,
@@ -118,6 +119,16 @@ function outsideLayer(insideLayer) {
       fillOpacity: 0.8,
     }
   );
+  function layerPolygons(layer) {
+    if (layer.getLayers)
+      return [...layer.getLayers().map(layerPolygons)];
+    else if (layer.getLatLngs)
+      return [...layer.getLatLngs()]
+    else {
+      console.warn("layerPolygons: something went wrong", layer);
+      return [];
+    }
+  }
 }
 
 function addMap(element) {

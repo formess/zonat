@@ -66,20 +66,40 @@ function deliveryZonesLegendControl(zonesLayer, options) {
   const zoneLayers = zonesLayer.getLayers();
   const legend = new Leaflet.Control({ position: 'topright' });
   legend.onAdd = function() {
-    const legendDiv = Leaflet.DomUtil.create('div', 'legend');
+    const legendDiv = DomUtil.create('div', 'legend');
     if (options.title) {
-      const legendTitle = Leaflet.DomUtil.create('h4', 'legend__title', legendDiv);
+      const legendTitle = DomUtil.create('h4', 'legend__title', legendDiv);
       legendTitle.textContent = options.title;
     }
     zoneLayers.forEach(function(zoneLayer, index) {
       const name = zoneLayer.feature.properties.name;
       const color = zoneLayer.options.color;
-      const zoneDiv = Leaflet.DomUtil.create('div', 'legend__zone', legendDiv);
-      const colorSpan = Leaflet.DomUtil.create('span', 'legend__zone-color', zoneDiv);
+      const zoneDiv = DomUtil.create('div', 'legend__zone', legendDiv);
+      const colorSpan = DomUtil.create('span', 'legend__zone-color', zoneDiv);
       colorSpan.style.background = color;
-      const nameSpan = Leaflet.DomUtil.create('span', 'legend__zone-name', zoneDiv);
+      const nameSpan = DomUtil.create('span', 'legend__zone-name', zoneDiv);
       nameSpan.textContent = name;
-      console.log(index, color, name);
+      zoneDiv.addEventListener('click', function(event) {
+        zoneLayer._map.fitBounds(zoneLayer.getBounds());
+      });
+      zoneDiv.addEventListener('mouseover', function(event) {
+        zoneLayer.fireEvent('mouseover')
+      });
+      zoneDiv.addEventListener('focus', function(event) {
+        zoneLayer.fireEvent('mouseover')
+      });
+      zoneDiv.addEventListener('mouseout', function(event) {
+        zoneLayer.fireEvent('mouseout')
+      });
+      zoneDiv.addEventListener('blur', function(event) {
+        zoneLayer.fireEvent('mouseout')
+      });
+      zoneLayer.on('mouseover', function(event) {
+        DomUtil.addClass(zoneDiv, "legend__zone--focused")
+      });
+      zoneLayer.on('mouseout', function(event) {
+        DomUtil.removeClass(zoneDiv, "legend__zone--focused")
+      });
     });
     return legendDiv;
   }

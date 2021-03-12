@@ -1,4 +1,13 @@
-import Leaflet from "leaflet";
+import { Map } from 'leaflet/src/map';
+import { Polygon, SVG, canvas } from 'leaflet/src/layer/vector';
+import { GeoJSON } from 'leaflet/src/layer/GeoJSON';
+import { TileLayer } from 'leaflet/src/layer/tile/TileLayer';
+import { Control } from 'leaflet/src/control';
+import * as DomUtil from 'leaflet/src/dom/DomUtil';
+import * as Util from 'leaflet/src/core/Util';
+
+const Leaflet = { Map, Polygon, GeoJSON, SVG, TileLayer, Control, DomUtil, canvas }
+
 import "./node_modules/leaflet/dist/leaflet.css";
 import { kml as kmlToGeoJson } from 'togeojson';
 import CartoColor from 'cartocolor';

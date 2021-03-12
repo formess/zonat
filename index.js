@@ -10,7 +10,7 @@ const map = addMap(document.body);
 addRasterTiles(map);
 
 const fetchDeliveryArea =
-  fetchGoogleMapsKmlDocument(isoRatasMid)
+  fetchKmlDocument(googleMapsKmlUrl(isoRatasMid))
     .then(parseKmlDocument);
 
 fetchDeliveryArea.then(function(deliveryArea) {
@@ -173,9 +173,9 @@ function parseKmlDocument(xml) {
   });
 }
 
-function fetchGoogleMapsKmlDocument(mid) {
+function fetchKmlDocument(url) {
   return new Promise(function(resolve, reject) {
-    withGoogleMapsKmlDocument(mid, function(error, xml) {
+    withKmlDocument(url, function(error, xml) {
       if (xml && !error)
         resolve(xml);
       else
@@ -184,8 +184,7 @@ function fetchGoogleMapsKmlDocument(mid) {
   });
 }
 
-function withGoogleMapsKmlDocument(mid, callback) {
-  const url = googleMapsKmlUrl(mid);
+function withKmlDocument(url, callback) {
   const request = new XMLHttpRequest;
   request.open('GET', url);
   request.send();

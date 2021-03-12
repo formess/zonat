@@ -70,7 +70,7 @@ function deliveryZonesLayer(deliveryZones) {
 
 function deliveryZonesLegendControl(zonesLayer, options) {
   const legend = new Leaflet.Control({ position: 'topright' });
-  legend.onAdd = function() {
+  legend.onAdd = function(map) {
     const legendDiv = DomUtil.create('div', 'legend');
     if (options.title) {
       const legendTitle = DomUtil.create('h4', 'legend__title', legendDiv);
@@ -87,7 +87,7 @@ function deliveryZonesLegendControl(zonesLayer, options) {
       const nameSpan = DomUtil.create('span', 'legend__zone-name', zoneDiv);
       nameSpan.textContent = name;
       zoneDiv.addEventListener('click', function(event) {
-        zoneLayer._map.fitBounds(zoneLayer.getBounds());
+        map.flyToBounds(zoneLayer.getBounds());
       });
       zoneDiv.addEventListener('mouseover', function(event) {
         zoneLayer.fireEvent('mouseover')

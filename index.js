@@ -15,8 +15,14 @@ import CartoColor from 'cartocolor';
 const paveMid = "1XPZjR9bKFqduKwRkjHUECEhmcwhO53dW";
 const isoRatasMid = "1ZrmW-kxq4VK-ND9Hj6kWlcuD3-z18mBB";
 
-const map = addMap(document.body);
-addRasterTiles(map);
+const helsinkiCoordinates = [60.192059, 24.945831];
+
+const map = new DeliveryAreaMap("map", {
+  center: helsinkiCoordinates,
+  zoom: 11
+});
+
+map.addLayer(new HelsinkiTileLayer({ style: "high-contrast" }))
 
 const fetchDeliveryArea =
   fetchKmlDocument(googleMapsKmlUrl(isoRatasMid))
@@ -136,29 +142,41 @@ function outsideLayer(insideLayer) {
   }
 }
 
-function addMap(element) {
-  if (!element) { element = document.body };
-  const div = document.createElement("div");
-  div.setAttribute("class", "map");
-  element.appendChild(div);
-
-  const helsinkiCoordinates = [60.192059, 24.945831];
-
-  const map = new Leaflet.Map(div, {
-    center: helsinkiCoordinates,
-    zoom: 12,
-    zoomSnap: 0.5,
-    maxBoundsViscosity: 0.75,
-    renderer: new Leaflet.SVG({ padding: 1 })
+function DeliveryAreaMap(element, options) {
+  const DeliveryAreaMap = Leaflet.Map.extend({
+    options: {
+      zoom: 12,
+      zoomSnap: 0.5,
+      maxBoundsViscosity: 0.75,
+      renderer: new Leaflet.SVG({ padding: 2 })
+    }
   });
-  return map;
+  return new DeliveryAreaMap(element, options);
 }
 
-function addRasterTiles(map) {
-  var style = "high-contrast";
-  const tileUrl = `https://tiles.hel.ninja/styles/hel-osm-${style}/{z}/{x}/{y}@2x@fi.png`;
-  const tileLayer = new Leaflet.TileLayer(tileUrl, {});
-  tileLayer.addTo(map);
+// https://dev.hel.fi/maps
+function HelsinkiTileLayer(options) {
+  const style = styleOption();
+  const lang = languageOption();
+  const tileUrl =
+    `https://tiles.hel.ninja/styles/hel-osm-${style}/{z}/{x}/{y}{r}@${lang}.png`;
+  return new Leaflet.TileLayer(tileUrl, options);
+
+  function styleOption() {
+    const styles = [ "bright", "light", "high-contrast" ];
+    const style = options && options.style ? options.style : styles[0];
+    if (style && !styles.includes(style))
+      throw new Error(`HelsinkiTileLayer: invalid style: ${style}`);
+    return style;
+  }
+
+  function languageOption() {
+    const languages = [ "fi", "sv" ];
+    const language = options && options.language ? options.language : languages[0];
+    if (language && !languages.includes(language))
+      console.warn(`HelsinkiTileLayer: poor choice of language: ${language}`);
+    return language;
+  }
 }
 
 function googleMapsKmlUrl(mid) {

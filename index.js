@@ -1,6 +1,6 @@
 import Leaflet from "leaflet";
 import "./node_modules/leaflet/dist/leaflet.css";
-import { kml as parseKml } from 'togeojson';
+import { kml as kmlToGeoJson } from 'togeojson';
 import CartoColor from 'cartocolor';
 
 const paveMid = "1XPZjR9bKFqduKwRkjHUECEhmcwhO53dW";
@@ -9,21 +9,17 @@ const isoRatasMid = "1ZrmW-kxq4VK-ND9Hj6kWlcuD3-z18mBB";
 const map = addMap(document.body);
 addRasterTiles(map);
 
-withGoogleMapsKmlDocument(isoRatasMid, function(err, xml) {
-  if (!xml) {
-    if (err)
-      console.error(err);
-    throw new Error("Failed to load map document");
-  }
-  console.log("KML", xml);
-  const mapName = xml.querySelector('Document > name').textContent;
-  const kml = parseKml(xml);
-  console.log("Geojson", kml);
-  const delivery = deliveryZonesLayer(kml);
+const fetchDeliveryArea =
+  fetchGoogleMapsKmlDocument(isoRatasMid)
+    .then(parseKmlDocument);
+
+fetchDeliveryArea.then(function(deliveryArea) {
+  console.log("Fetched delivery area", deliveryArea);
+  const delivery = deliveryZonesLayer(deliveryArea);
   delivery.addTo(map);
   const outside = outsideLayer(delivery);
   outside.addTo(map);
-  const legend = deliveryZonesLegendControl(delivery, { title: mapName } );
+  const legend = deliveryZonesLegendControl(delivery, { title: deliveryArea.name } );
   legend.addTo(map);
   map.setMaxBounds(delivery.getBounds().pad(0.05));
   map.setMinZoom(map.getBoundsZoom(delivery.getBounds()));
@@ -158,6 +154,34 @@ function addRasterTiles(map) {
 
 function googleMapsKmlUrl(mid) {
   return `https://www.google.com/maps/d/kml?forcekml=1&mid=${mid}`
+}
+
+function parseKmlDocument(xml) {
+  console.info('parsing KML document', xml);
+  return new Promise(function(resolve, reject) {
+    const kml = kmlToGeoJson(xml);
+    const name = xml.querySelector('Document > name');
+    const description = xml.querySelector('Document > description');
+    if (name && name.textContent)
+      kml.name = name.textContent;
+    if (description && description.textContent)
+      kml.description = description.textContent;
+    if (kml.type === "FeatureCollection" && kml.features && kml.features.length > 0)
+      resolve(kml);
+    else
+      reject(kml);
+  });
+}
+
+function fetchGoogleMapsKmlDocument(mid) {
+  return new Promise(function(resolve, reject) {
+    withGoogleMapsKmlDocument(mid, function(error, xml) {
+      if (xml && !error)
+        resolve(xml);
+      else
+        reject(error);
+    })
+  });
 }
 
 function withGoogleMapsKmlDocument(mid, callback) {

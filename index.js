@@ -3,6 +3,7 @@ import { Polygon, SVG, canvas } from 'leaflet/src/layer/vector';
 import { GeoJSON } from 'leaflet/src/layer/GeoJSON';
 import { TileLayer } from 'leaflet/src/layer/tile/TileLayer';
 import { Control } from 'leaflet/src/control';
+import { LatLng } from 'leaflet/src/geo/LatLng'
 import * as DomUtil from 'leaflet/src/dom/DomUtil';
 import * as Util from 'leaflet/src/core/Util';
 
@@ -15,13 +16,7 @@ import CartoColor from 'cartocolor';
 const paveMid = "1XPZjR9bKFqduKwRkjHUECEhmcwhO53dW";
 const isoRatasMid = "1ZrmW-kxq4VK-ND9Hj6kWlcuD3-z18mBB";
 
-const helsinkiCoordinates = [60.192059, 24.945831];
-
-const map = new DeliveryAreaMap("map", {
-  center: helsinkiCoordinates,
-  zoom: 11
-});
-
+const map = new DeliveryAreaMap("map", {});
 map.addLayer(new HelsinkiTileLayer({ style: "high-contrast" }))
 
 const fetchDeliveryArea =
@@ -145,7 +140,7 @@ function outsideLayer(insideLayer) {
 function DeliveryAreaMap(element, options) {
   const DeliveryAreaMap = Leaflet.Map.extend({
     options: {
-      zoom: 12,
+      zoom: 11,
       zoomSnap: 0.5,
       maxBoundsViscosity: 0.75,
       renderer: new Leaflet.SVG({ padding: 2 })
@@ -160,7 +155,23 @@ function HelsinkiTileLayer(options) {
   const lang = languageOption();
   const tileUrl =
     `https://tiles.hel.ninja/styles/hel-osm-${style}/{z}/{x}/{y}{r}@${lang}.png`;
-  return new Leaflet.TileLayer(tileUrl, options);
+
+  const HelsinkiTileLayer = Leaflet.TileLayer.extend({
+    beforeAdd: function(map) {
+      setMapCenter(map);
+      return Leaflet.TileLayer.prototype.beforeAdd.call(this, map);
+    }
+  })
+  return new HelsinkiTileLayer(tileUrl, options);
+
+  function setMapCenter(map) {
+    const helsinki = new LatLng(60.192059, 24.945831);
+    if (!map.options.center || !map._loaded) {
+      console.info("HelsinkiTileLayer: setting map center");
+      map.options.center = helsinki;
+      map.setView(helsinki, map.options.zoom || 11, { reset: true })
+    }
+  }
 
   function styleOption() {
     const styles = [ "bright", "light", "high-contrast" ];

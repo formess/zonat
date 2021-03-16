@@ -38,17 +38,25 @@ const fetchDeliveryArea =
 
 fetchDeliveryArea.then(function(deliveryArea) {
   console.log("Fetched delivery area", deliveryArea);
-  const delivery = deliveryZonesLayer(deliveryArea);
+  const delivery = new DeliveryArea(deliveryArea);
   delivery.addTo(map);
-  const outside = outsideLayer(delivery);
-  outside.addTo(map);
-  const legend = deliveryZonesLegendControl(delivery, { title: deliveryArea.name } );
-  legend.addTo(map);
-  map.setMaxBounds(delivery.getBounds().pad(0.05));
-  map.setMinZoom(map.getBoundsZoom(delivery.getBounds()));
-  map.setZoom(map.getMinZoom());
-  map.panInsideBounds(delivery.getBounds());
 });
+
+function DeliveryArea(deliveryZones, options) {
+  const delivery = deliveryZonesLayer(deliveryZones);
+  const outside = outsideLayer(delivery);
+  const legend = deliveryZonesLegendControl(delivery, { title: deliveryZones.name } );
+  delivery.on('add', function(event) {
+    const map = event.target._map;
+    outside.addTo(map);
+    legend.addTo(map);
+    map.setMaxBounds(delivery.getBounds().pad(0.25));
+    map.setMinZoom(map.getBoundsZoom(delivery.getBounds()));
+    map.setZoom(map.getMinZoom());
+    map.panInsideBounds(delivery.getBounds());
+  });
+  return delivery;
+}
 
 function deliveryZonesLayer(deliveryZones) {
   const zonesLayer = new Leaflet.GeoJSON(deliveryZones)

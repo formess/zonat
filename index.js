@@ -15,9 +15,22 @@ import CartoColor from 'cartocolor';
 
 const paveMid = "1XPZjR9bKFqduKwRkjHUECEhmcwhO53dW";
 const isoRatasMid = "1ZrmW-kxq4VK-ND9Hj6kWlcuD3-z18mBB";
+const basemaps = {
+  highContrastHel: new TileLayer(
+    helNinjaTileUrl({ style: "hel-osm-high-contrast" })
+  ),
+  highContrastTurku: new TileLayer(
+    helNinjaTileUrl({ style: "turku-osm-high-contrast" })
+  ),
+  toner: new TileLayer(
+    mapTilerTileUrl({ style: "toner", key: TONER_KEY })
+  )
+};
 
-const map = new DeliveryAreaMap("map", {});
-map.addLayer(new HelsinkiTileLayer({ style: "high-contrast" }))
+const helsinki = new LatLng(60.192059, 24.945831);
+
+const map = new DeliveryAreaMap("map", { center: helsinki, zoom: 12 });
+map.addLayer(basemaps.highContrastTurku);
 
 const fetchDeliveryArea =
   fetchKmlDocument(googleMapsKmlUrl(isoRatasMid))
@@ -150,44 +163,17 @@ function DeliveryAreaMap(element, options) {
 }
 
 // https://dev.hel.fi/maps
-function HelsinkiTileLayer(options) {
-  const style = styleOption();
-  const lang = languageOption();
-  const tileUrl =
-    `https://tiles.hel.ninja/styles/hel-osm-${style}/{z}/{x}/{y}{r}@${lang}.png`;
+// http://tiles.hel.ninja/
+function helNinjaTileUrl(options = {}) {
+  const style = options.style || "hel-osm-bright"
+  const lang = options.language || "fi";
+  return `https://tiles.hel.ninja/styles/${style}/{z}/{x}/{y}{r}@${lang}.png`;
+}
 
-  const HelsinkiTileLayer = Leaflet.TileLayer.extend({
-    beforeAdd: function(map) {
-      setMapCenter(map);
-      return Leaflet.TileLayer.prototype.beforeAdd.call(this, map);
-    }
-  })
-  return new HelsinkiTileLayer(tileUrl, options);
-
-  function setMapCenter(map) {
-    const helsinki = new LatLng(60.192059, 24.945831);
-    if (!map.options.center || !map._loaded) {
-      console.info("HelsinkiTileLayer: setting map center");
-      map.options.center = helsinki;
-      map.setView(helsinki, map.options.zoom || 11, { reset: true })
-    }
-  }
-
-  function styleOption() {
-    const styles = [ "bright", "light", "high-contrast" ];
-    const style = options && options.style ? options.style : styles[0];
-    if (style && !styles.includes(style))
-      throw new Error(`HelsinkiTileLayer: invalid style: ${style}`);
-    return style;
-  }
-
-  function languageOption() {
-    const languages = [ "fi", "sv" ];
-    const language = options && options.language ? options.language : languages[0];
-    if (language && !languages.includes(language))
-      console.warn(`HelsinkiTileLayer: poor choice of language: ${language}`);
-    return language;
-  }
+function mapTilerTileUrl(options = {}) {
+  const style = options.style || "bright";
+  const key = options.key;
+  return `https://api.maptiler.com/maps/${style}/{z}/{x}/{y}{r}.png?key=${key}`;
 }
 
 function googleMapsKmlUrl(mid) {

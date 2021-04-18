@@ -6,9 +6,9 @@ import { LatLng } from 'leaflet/src/geo/LatLng';
 export var HelNinjaTileLayer = TileLayer.extend({
   options: {
     maxZoom: 21,
-    maxNativeZoom: 21,
     tileSize: 512,
-    zoomOffset: -1
+    zoomOffset: -1,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
   initialize(options = {}) {
     const tileUrl = helNinjaTileUrl(options);

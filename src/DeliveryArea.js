@@ -11,7 +11,8 @@ export var DeliveryAreaMap = Map.extend({
     maxBoundsViscosity: 0.75,
     renderer: new SVG({ padding: 2 }),
     zoomSnap: 0.5,
-    zoomDelta: 0.5
+    zoomDelta: 0.5,
+    bounceAtZoomLimits: false,
   }
 });
 

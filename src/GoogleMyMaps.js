@@ -5,7 +5,12 @@ export function withMapData(mid) {
   return function(resolve, reject) {
     return withKmlDocument(url)(
       (kmlDocument) => resolve(parseKmlDocument(kmlDocument)),
-      reject
+      reject || function(failedRequest) {
+        console.error(
+          'Failed to load data from Google MyMaps',
+          { mid, url, failedRequest }
+        );
+      }
     )
   }
 }

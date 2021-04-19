@@ -16,12 +16,20 @@ export var DeliveryAreaMap = Map.extend({
 });
 
 export var DeliveryArea = GeoJSON.extend({
-  initialize(deliveryZones, options) {
-    GeoJSON.prototype.initialize.call(this, deliveryZones, options)
-    this.getLayers().forEach((zoneLayer, index) => {
-      zoneLayer.on(this.zoneEventHandlers(zoneLayer))
-      zoneLayer.setStyle(this.zoneStyle(zoneLayer));
-    });
+  options: {
+    style(zone) {
+      return {
+        weight: zone.focused ? 6 : 3,
+        color: zone.properties.fill,
+        fillOpacity: zone.focused ? 0.2 : 0.5
+      }
+    }
+  },
+  addLayer(layer) {
+    GeoJSON.prototype.addLayer.call(this, layer);
+    layer.on('mouseover', () => this.focusZone(layer));
+    layer.on('mouseout', () => this.unfocusZone(layer));
+    layer.on('click', () => this.zoomZone(layer));
   },
   onAdd(map) {
     LayerGroup.prototype.onAdd.call(this, map);
@@ -30,28 +38,18 @@ export var DeliveryArea = GeoJSON.extend({
     map.setZoom(map.getMinZoom());
     map.panInsideBounds(this.getBounds());
   },
-  zoneEventHandlers(zoneLayer) {
-    const stateStyle = (state) => this.zoneStyle(zoneLayer, state)
-    return {
-      mouseover(event) {
-        zoneLayer.setStyle(stateStyle('focused'));
-        zoneLayer.bringToFront();
-      },
-      mouseout(event) {
-        zoneLayer.setStyle(stateStyle('normal'));
-      },
-      click(event) {
-        if (zoneLayer._map)
-          zoneLayer._map.flyToBounds(zoneLayer.getBounds());
-      }
-    }
+  focusZone(layer) {
+    layer.feature.focused = true;
+    this.resetStyle(layer);
+    layer.bringToFront();
   },
-  zoneStyle(zoneLayer, state) {
-    return {
-      weight: state === 'focused' ? 6 : 3,
-      color: zoneLayer.feature.properties.fill,
-      fillOpacity: state === 'focused' ? 0.2 : 0.5
-    }
+  unfocusZone(layer) {
+    layer.feature.focused = false;
+    this.resetStyle(layer);
+  },
+  zoomZone(layer) {
+    if (layer._map)
+      layer._map.flyToBounds(layer.getBounds());
   }
 });
 

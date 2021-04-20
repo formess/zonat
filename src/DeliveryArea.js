@@ -21,7 +21,7 @@ export var DeliveryArea = GeoJSON.extend({
     style(zone) {
       return {
         weight: zone.focused ? 6 : 3,
-        color: zone.properties.fill,
+        color: zone.properties.color || zone.properties.fill,
         fillOpacity: zone.focused ? 0.2 : 0.5
       }
     }

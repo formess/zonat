@@ -4,7 +4,7 @@ import { LayerGroup } from 'leaflet/src/layer/LayerGroup';
 import { GeoJSON } from 'leaflet/src/layer/GeoJSON';
 import { Control } from 'leaflet/src/control';
 import { create as createElement, addClass, removeClass } from 'leaflet/src/dom/DomUtil';
-import { on as onDomEvent } from 'leaflet/src/dom/DomEvent';
+import { on as onDomEvent, disableScrollPropagation } from 'leaflet/src/dom/DomEvent';
 import { Attribution } from 'leaflet/src/control/Control.Attribution.js';
 
 export var DeliveryAreaMap = Map.extend({
@@ -91,6 +91,7 @@ export var DeliveryAreaLegend = Control.extend({
         mouseout() { removeClass(zoneDiv, "legend__zone--focused") },
       });
     });
+    disableScrollPropagation(legendDiv);
     return legendDiv;
   }
 });

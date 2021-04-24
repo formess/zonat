@@ -48,6 +48,7 @@ export var DeliveryArea = GeoJSON.extend({
   unfocusZone(layer) {
     layer.feature.focused = false;
     this.eachLayer(layer => layer.bringToBack());
+    this.bringToFront();
     this.resetStyle(layer);
   },
   zoomZone(layer) {

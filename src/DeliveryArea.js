@@ -5,6 +5,7 @@ import { GeoJSON } from 'leaflet/src/layer/GeoJSON';
 import { Control } from 'leaflet/src/control';
 import { create as createElement, addClass, removeClass } from 'leaflet/src/dom/DomUtil';
 import { on as onDomEvent } from 'leaflet/src/dom/DomEvent';
+import { Attribution } from 'leaflet/src/control/Control.Attribution.js';
 
 export var DeliveryAreaMap = Map.extend({
   options: {
@@ -113,3 +114,7 @@ function layerPolygons(layer) {
     return [];
   }
 }
+
+Attribution.mergeOptions({
+  prefix: '<a href="https://github.com/formess">Formess</a>'
+})

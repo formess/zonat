@@ -6,7 +6,7 @@ import { LatLng } from 'leaflet/src/geo/LatLng';
 export var HelNinjaTileLayer = TileLayer.extend({
   options: {
     maxZoom: 20,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attribution: '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://github.com/City-of-Helsinki/hel-osm-high-contrast">Helsingin kaupunki</a>',
   },
   initialize(options = {}) {
     const tileUrl = helNinjaTileUrl(options);

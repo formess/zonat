@@ -98,7 +98,7 @@ export var DeliveryAreaLegend = Control.extend({
 
 export var InvertedDeliveryArea = Polygon.extend({
   initialize(internal, options) {
-    const bounds = internal.getBounds().pad(1);
+    const bounds = internal.getBounds().pad(5);
     const world = [ bounds.getSouthWest(), bounds.getNorthWest(),
                     bounds.getNorthEast(), bounds.getSouthEast() ];
     const holes = layerPolygons(internal);

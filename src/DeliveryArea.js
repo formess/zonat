@@ -1,6 +1,5 @@
 import { Map } from 'leaflet/src/map';
 import { SVG, Polygon } from 'leaflet/src/layer/vector';
-import { LayerGroup } from 'leaflet/src/layer/LayerGroup';
 import { GeoJSON } from 'leaflet/src/layer/GeoJSON';
 import { Control } from 'leaflet/src/control';
 import { create as createElement, addClass, removeClass } from 'leaflet/src/dom/DomUtil';
@@ -17,6 +16,23 @@ export var DeliveryAreaMap = Map.extend({
     zoomControl: false,
   }
 });
+
+export function DeliveryAreaData(mapData) {
+  this.deliveryArea = new DeliveryArea(mapData);
+  this.deliveryAreaLegend = new DeliveryAreaLegend(this.deliveryArea, {
+    title: mapData.name,
+  });
+  this.nonDeliveryArea = new InvertedDeliveryArea(this.deliveryArea, {
+    stroke: false,
+    fillColor: "grey",
+    fillOpacity: 0.8,
+  });
+  this.addTo = function(map) {
+    map.addLayer(this.nonDeliveryArea);
+    map.addLayer(this.deliveryArea);
+    map.addControl(this.deliveryAreaLegend);
+  }
+}
 
 export var DeliveryArea = GeoJSON.extend({
   options: {
@@ -35,7 +51,7 @@ export var DeliveryArea = GeoJSON.extend({
     layer.on('click', () => this.zoomZone(layer));
   },
   onAdd(map) {
-    LayerGroup.prototype.onAdd.call(this, map);
+    GeoJSON.prototype.onAdd.call(this, map);
     map.setMaxBounds(this.getBounds().pad(0.25));
     map.setMinZoom(map.getBoundsZoom(this.getBounds()));
     map.setZoom(map.getMinZoom());

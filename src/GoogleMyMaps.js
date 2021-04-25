@@ -1,4 +1,5 @@
 import { kml as kmlToGeoJson } from 'togeojson';
+import xhr from '@mapbox/corslite';
 
 export function withMapData(mid) {
   if (!mid) return function(resolve, reject) {
@@ -8,10 +9,10 @@ export function withMapData(mid) {
   return function(resolve, reject) {
     return withKmlDocument(url)(
       (kmlDocument) => resolve(parseKmlDocument(kmlDocument)),
-      reject || function(failedRequest) {
+      reject || function(error) {
         console.error(
           'Failed to load data from Google MyMaps',
-          { mid, url, failedRequest }
+          { mid, url, error }
         );
       }
     )
@@ -32,22 +33,16 @@ export function parseKmlDocument(xml) {
 
 export function withKmlDocument(url) {
   return function(resolve, reject) {
-    const request = new XMLHttpRequest;
-    request.open('GET', url);
-    request.send();
-    return withXhrXmlResponse(request)(resolve, reject);
-  }
-}
-
-function withXhrXmlResponse(request) {
-  return function(resolve, reject) {
-    if (request.status === 200 && request.responseXML && resolve)
-      resolve(request.responseXML);
-    else if (request.readyState !== (request.readyState.DONE || 4))
-      request.addEventListener("loadend", () => withXhrXmlResponse(request)(resolve, reject));
-    else if (reject)
-      reject(request);
-    return request;
+    xhr(url, function(error, response) {
+      if (error)
+        reject && reject(error);
+      else if (response && response.responseXML)
+        resolve && resolve(response.responseXML);
+      else if (response) {
+        console.error('No responseXML in XHR from ', url);
+        reject && reject(response);
+      }
+    })
   }
 }
 

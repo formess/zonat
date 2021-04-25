@@ -1,11 +1,11 @@
 import { kml as kmlToGeoJson } from 'togeojson';
 import xhr from '@mapbox/corslite';
 
-export function withMapData(mid) {
+export function withMapData(mid, lid) {
   if (!mid) return function(resolve, reject) {
     console.warn("Google map id wasn't provided");
   };
-  const url = kmlUrl(mid);
+  const url = kmlUrl(mid, lid);
   return function(resolve, reject) {
     return withKmlDocument(url)(
       (kmlDocument) => resolve(parseKmlDocument(kmlDocument)),
@@ -46,6 +46,11 @@ export function withKmlDocument(url) {
   }
 }
 
-export function kmlUrl(mid) {
-  return `https://www.google.com/maps/d/kml?forcekml=1&mid=${mid}`
+export function kmlUrl(mid, lid) {
+  const url = new URL('https://www.google.com/maps/d/kml');
+  url.searchParams.set('forcekml', '1');
+  url.searchParams.set('mid', mid);
+  if (lid)
+    url.searchParams.set('lid', lid);
+  return url.toString();
 }

@@ -14,6 +14,7 @@ export var DeliveryAreaMap = Map.extend({
     zoomSnap: 0.5,
     zoomDelta: 0.5,
     bounceAtZoomLimits: false,
+    zoomControl: false,
   }
 });
 

@@ -1,6 +1,9 @@
 import { kml as kmlToGeoJson } from 'togeojson';
 
 export function withMapData(mid) {
+  if (!mid) return function(resolve, reject) {
+    console.warn("Google map id wasn't provided");
+  };
   const url = kmlUrl(mid);
   return function(resolve, reject) {
     return withKmlDocument(url)(

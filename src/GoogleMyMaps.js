@@ -1,4 +1,4 @@
-import { kml as kmlToGeoJson } from 'togeojson';
+import { kml as kmlToGeoJson } from '@tmcw/togeojson';
 import xhr from '@mapbox/corslite';
 
 export function withMapData(mid, lid) {

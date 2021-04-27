@@ -31,6 +31,10 @@ export function DeliveryAreaData(mapData) {
     map.addLayer(this.nonDeliveryArea);
     map.addLayer(this.deliveryArea);
     map.addControl(this.deliveryAreaLegend);
+    return this;
+  }
+  this.getBounds = function() {
+    return this.deliveryArea.getBounds();
   }
 }
 

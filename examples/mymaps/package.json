@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "browserslist": "defaults",
+  "dependencies": {
+    "leaflet": "Leaflet/Leaflet#pull/7439/head",
+    "zonat": "../../"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "2.0.0-beta.2",
+    "parcel": "^2.0.0-beta.2"
+  },
+  "scripts": {
+    "dev": "parcel index.html",
+    "build": "parcel build --detailed-report 100 --no-source-maps --no-cache index.html"
+  }
+}

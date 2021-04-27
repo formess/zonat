@@ -1,15 +1,13 @@
 {
-  "devDependencies": {
-    "parcel-bundler": "^1.12.4"
-  },
-  "scripts": {
-    "dev": "parcel index.html",
-    "build": "parcel build index.html"
-  },
+  "name": "zonat",
+  "version": "0.0.0",
+  "license": "GPL-3.0",
+  "files": [
+    "src/*"
+  ],
   "dependencies": {
-    "@mapbox/togeojson": "^0.16.0",
-    "cartocolor": "^4.0.2",
+    "@tmcw/togeojson": "^4.4.0",
     "leaflet": "^1.7.1",
-    "togeojson": "^0.16.0"
+    "pelias-leaflet-plugin": "^1.12.0"
   }
 }

@@ -47,10 +47,10 @@ export function withKmlDocument(url) {
 }
 
 export function kmlUrl(mid, lid) {
-  const url = new URL('https://www.google.com/maps/d/kml');
-  url.searchParams.set('forcekml', '1');
-  url.searchParams.set('mid', mid);
-  if (lid)
-    url.searchParams.set('lid', lid);
-  return url.toString();
+  return (
+    'https://www.google.com/maps/d/kml' +
+      '?' + 'forcekml=1' +
+      '&' + 'mid=' + mid +
+      (!lid ? '' : ('&' + 'lid=' + lid))
+  )
 }

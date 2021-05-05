@@ -2,10 +2,13 @@ import xhr from '@mapbox/corslite';
 
 import { Zoom } from 'leaflet/src/control/Control.Zoom';
 
-import { DeliveryAreaMap, DeliveryAreaData } from 'zonat/src/DeliveryArea';
-import { HelNinjaTileLayer } from 'zonat/src/HelNinja';
-import { withMapData as withMyMapsData } from 'zonat/src/GoogleMyMaps';
-import { DigiTransitSearch } from 'zonat/src/Search';
+import {
+  DeliveryAreaMap,
+  DeliveryAreaData,
+  DigiTransitSearch,
+  withMapData as withMyMapsData,
+  HelNinjaTileLayer,
+} from 'zonat'
 
 window.addEventListener('DOMContentLoaded', function() {
   main(document.body);

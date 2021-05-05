@@ -5,6 +5,7 @@
   "files": [
     "src/*"
   ],
+  "module": "./src/index.js",
   "dependencies": {
     "@tmcw/togeojson": "^4.4.0",
     "leaflet": "^1.7.1",
